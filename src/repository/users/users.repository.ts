@@ -7,7 +7,7 @@ import { randomUUID } from 'crypto';
 import { UserEntity } from 'src/entities/user.entity';
 import { CreateUserDTO } from 'src/modules/users/dtos/create-user.dto';
 import { UpdateUserDTO } from 'src/modules/users/dtos/update-user.dto';
-import { IUsersRepository } from './users-repository.interface';
+import { IUsersRepository } from '../users/users-repository.interface';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 

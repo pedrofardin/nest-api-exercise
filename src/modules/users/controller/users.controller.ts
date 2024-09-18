@@ -69,7 +69,7 @@ export class UsersController {
   ) {
     const user = req['user'] as JwtTicketDTO;
 
-    if (user.sub !== userId) {
+    if (user.id !== userId) {
       throw new BadRequestException(
         'You can only access your own user information',
       );

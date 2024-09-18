@@ -1,3 +1,3 @@
 export class JwtTicketDTO {
-  sub: string;
+  id: string;
 }

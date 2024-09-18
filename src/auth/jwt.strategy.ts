@@ -2,8 +2,8 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { jwtConstants } from './constants';
-import { IUsersRepository } from 'src/repository/users-repository.interface';
-import { UsersRepository } from 'src/repository/users.repository';
+import { IUsersRepository } from 'src/repository/users/users-repository.interface';
+import { UsersRepository } from 'src/repository/users/users.repository';
 import { JwtTicketDTO } from 'src/shared/dto/jwt-ticket.dto';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(ticket: JwtTicketDTO) {
-    const user = await this._usersRepository.findUserById(ticket.sub);
+    const user = await this._usersRepository.findUserById(ticket.id);
 
     if (!user) {
       throw new UnauthorizedException('User not found or invalid token');

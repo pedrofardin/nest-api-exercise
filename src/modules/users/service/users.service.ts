@@ -2,10 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { GetUserDTO } from '../dtos/get-user.dto';
 import { CreateUserDTO } from '../dtos/create-user.dto';
 import { UpdateUserDTO } from '../dtos/update-user.dto';
-import { IUsersRepository } from 'src/repository/users-repository.interface';
+import { IUsersRepository } from 'src/repository/users/users-repository.interface';
 import { IUsersService } from './users-service.interface';
 import { TransferMoneyBetweenUsersDTO } from '../dtos/transfer-money-between-users.dto';
-import { UsersRepository } from 'src/repository/users.repository';
+import { UsersRepository } from 'src/repository/users/users.repository';
 import * as bcrypt from 'bcrypt';
 import { GetUsersDTO } from '../dtos/get-users.dto';
 
