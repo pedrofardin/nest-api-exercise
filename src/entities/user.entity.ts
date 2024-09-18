@@ -16,4 +16,7 @@ export class UserEntity {
 
   @Column({ name: 'balance', type: 'numeric' })
   balance: number;
+
+  @Column({ name: 'birthdate', type: 'date' })
+  birthdate: string;
 }

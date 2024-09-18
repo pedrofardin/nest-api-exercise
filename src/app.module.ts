@@ -11,7 +11,7 @@ import { AuthModule } from './auth/auth.module';
     DatabaseModule,
     UsersControllerModule,
     UsersRepositoryModule,
-    AuthModule
+    AuthModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],

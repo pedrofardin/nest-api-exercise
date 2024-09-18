@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { GetUserDTO } from '../dtos/get-users.dto';
+import { GetUserDTO } from '../dtos/get-user.dto';
 import { CreateUserDTO } from '../dtos/create-user.dto';
 import { UpdateUserDTO } from '../dtos/update-user.dto';
 import { IUsersRepository } from 'src/repository/users-repository.interface';
@@ -7,6 +7,7 @@ import { IUsersService } from './users-service.interface';
 import { TransferMoneyBetweenUsersDTO } from '../dtos/transfer-money-between-users.dto';
 import { UsersRepository } from 'src/repository/users.repository';
 import * as bcrypt from 'bcrypt';
+import { GetUsersDTO } from '../dtos/get-users.dto';
 
 @Injectable()
 export class UsersService implements IUsersService {
@@ -30,7 +31,7 @@ export class UsersService implements IUsersService {
     return await this._userRepository.findUserById(id);
   };
 
-  findUsers = async (): Promise<GetUserDTO[]> => {
+  findUsers = async (): Promise<GetUsersDTO[]> => {
     return await this._userRepository.findUsers();
   };
 

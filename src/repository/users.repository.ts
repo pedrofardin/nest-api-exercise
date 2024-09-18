@@ -1,52 +1,66 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { UserEntity } from 'src/entities/user.entity';
 import { CreateUserDTO } from 'src/modules/users/dtos/create-user.dto';
-import { GetUserDTO } from 'src/modules/users/dtos/get-users.dto';
 import { UpdateUserDTO } from 'src/modules/users/dtos/update-user.dto';
 import { IUsersRepository } from './users-repository.interface';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { UpdatedUserBalanceDTO } from 'src/modules/users/dtos/update-user-balance.dto';
 
 @Injectable()
 export class UsersRepository implements IUsersRepository {
   constructor(
     @InjectRepository(UserEntity)
-    private readonly _userRepository: Repository<UserEntity>
+    private readonly _userRepository: Repository<UserEntity>,
   ) {}
 
-  createUser = async (user: CreateUserDTO): Promise<CreateUserDTO> => {
-    const newUser = new UserEntity();
+  createUser = async (user: CreateUserDTO): Promise<UserEntity> => {
+    try {
+      const newUser = new UserEntity();
 
-    newUser.id = randomUUID().toString();
-    newUser.name = user.name;
-    newUser.password = user.password;
-    newUser.email = user.email;
-    newUser.balance = user.balance;
+      newUser.id = randomUUID().toString();
+      newUser.name = user.name;
+      newUser.password = user.password;
+      newUser.email = user.email;
+      newUser.birthdate = user.birthdate;
 
-    return this._userRepository.save(newUser);
+      return this._userRepository.save(newUser);
+    } catch {
+      throw new BadRequestException('Failed to create a new User');
+    }
   };
 
-  findUserById = async (id: string): Promise<GetUserDTO> => {
-    return await this._userRepository.findOne({ where: { id } });
-  };
-
-  findUserByEmail = async (email: string): Promise<GetUserDTO> => {
-    return await this._userRepository.findOne({ where: { email } });
-  };
-
-  findUsers = async (): Promise<GetUserDTO[]> => {
-    return await this._userRepository.find();
-  };
-
-  updateUser = async (
-    id: string,
-    user: UpdateUserDTO,
-  ): Promise<UpdateUserDTO> => {
-    const updatedUser = await this._userRepository.findOne({ where: { id } });
-
+  findUserById = async (id: string): Promise<UserEntity> => {
+    const user = await this._userRepository.findOne({ where: { id } });
     if (!user) {
+      throw new NotFoundException(`User whith ${id} not found`);
+    }
+    return user;
+  };
+
+  findUserByEmail = async (email: string): Promise<UserEntity> => {
+    const user = await this._userRepository.findOne({ where: { email } });
+    if (!user) {
+      throw new NotFoundException(`User whith ${email} not found`);
+    }
+    return user;
+  };
+
+  findUsers = async (): Promise<UserEntity[]> => {
+    const users = await this._userRepository.find();
+    if (!users.length) {
+      throw new NotFoundException('No users found');
+    }
+    return users;
+  };
+
+  updateUser = async (id: string, user: UpdateUserDTO): Promise<UserEntity> => {
+    const updatedUser = await this._userRepository.findOne({ where: { id } });
+    if (!updatedUser) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
@@ -60,23 +74,20 @@ export class UsersRepository implements IUsersRepository {
   updateUserBalance = async (
     id: string,
     quantity: number,
-  ): Promise<UpdatedUserBalanceDTO> => {
+  ): Promise<UserEntity> => {
     const user = await this._userRepository.findOne({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
     user.balance = Number(user.balance) + quantity;
+    if (user.balance < 0) {
+      throw new BadRequestException('Not enough balance to transfer');
+    }
 
     await this._userRepository.save(user);
 
-    const UpdatedUserBalance: UpdatedUserBalanceDTO = {
-      name: user.name,
-      email: user.email,
-      balance: user.balance,
-    };
-
-    return UpdatedUserBalance;
+    return user;
   };
 
   removeUser = async (id: string): Promise<void> => {
